@@ -1,4 +1,4 @@
-package input;
+package game.input;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

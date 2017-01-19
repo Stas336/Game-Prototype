@@ -1,4 +1,4 @@
-package map;
+package item.map;
 
 import factory.impl.money.usd.*;
 import factory.impl.money.eur.*;
@@ -79,5 +79,9 @@ public final class ItemsMap
     public Set<String> getAllItemTypes()
     {
         return map.keySet();
+    }
+    public int getAllItemTypesAmount()
+    {
+        return map.size();
     }
 }

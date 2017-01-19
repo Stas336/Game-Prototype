@@ -26,6 +26,11 @@ public class TradeUnit implements Item
         this.cost = newCost;
     }
 
+    public String getCurrency()
+    {
+        return cost.getCurrency();
+    }
+
     public Player getOwner() {
         return this.owner;
     }

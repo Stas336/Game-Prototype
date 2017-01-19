@@ -9,6 +9,7 @@ public interface Item
     void setDescription(String newDescription);
     int getCost();
     void setCost(Money newCost);
+    String getCurrency();
     Player getOwner();
     void setOwner(Player player);
 }

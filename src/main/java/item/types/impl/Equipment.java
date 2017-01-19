@@ -3,6 +3,8 @@ package item.types.impl;
 import item.types.Item;
 import player.Player;
 
+import java.util.ArrayList;
+
 public class Equipment implements Item
 {
     private String description;
@@ -25,6 +27,12 @@ public class Equipment implements Item
     public void setCost(Money newCost) {
         this.cost = newCost;
     }
+
+    public String getCurrency()
+    {
+        return cost.getCurrency();
+    }
+
     public Player getOwner() {
         return this.owner;
     }

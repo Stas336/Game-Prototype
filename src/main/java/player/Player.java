@@ -1,86 +1,154 @@
 package player;
 
-import item.money.EUR;
-import item.money.RUB;
-import item.money.USD;
+import item.equipment.cloth.Cloth;
+import item.money.*;
+import item.money.Currency;
 import item.types.Item;
-import item.types.impl.Money;
+import item.types.ItemType;
+import item.types.impl.Bill;
+import item.types.impl.BillsPack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Player
 {
     private int health;
     private int armor;
-    private int moneyRUB;
-    private int moneyUSD;
-    private int moneyEUR;
-    private ArrayList<Item> inventory;
-    //private ArrayList<Item> rightHand;
-    //private ArrayList<Item> leftHand;
-    //private ArrayList<Item> torso;
+    private List<Money> currencies;
+    private List<Item> inventory;
+    private List<Cloth> clothes;
+    /*private Cloth head;
+    private Cloth leftHand;
+    private Cloth rightHand;
+    private Cloth upperBodyPart;
+    private Cloth lowerBodyPart;
+    private Cloth leftKnee;
+    private Cloth rightKnee;
+    private Cloth leftLeg;
+    private Cloth rightLeg;*/
+
 
     public Player()
     {
         setHealth(0);
         setArmor(0);
-        setMoneyRUB(0);
-        setMoneyUSD(0);
-        setMoneyEUR(0);
+        currencies = new ArrayList<>();
         inventory = new ArrayList<>();
+        clothes = new ArrayList<>();
     }
 
     public void showPlayerInfo()
     {
-        String leftAlignFormat = "| %-3d| %-3d   | %-5d       | %-5d       | %-5d       |%n";
-        System.out.format("+----+-------+-------------+-------------+-------------+%n");
-        System.out.format("| HP | ARMOR | MONEY (RUB) | MONEY (USD) | MONEY (EUR) |%n");
-        System.out.format("+----+-------+-------------+-------------+-------------+%n");
-        System.out.format(leftAlignFormat, getHealth(), getArmor(), getMoneyRUB(), getMoneyUSD(), getMoneyEUR());
-        System.out.format("+----+-------+-------------+-------------+-------------+%n");
+        System.out.println("+----+---+");
+        System.out.printf("| HP | %d |\n", getHealth());
+        System.out.println("+----+---+");
+        System.out.println("+-------+---+");
+        System.out.printf("| ARMOR | %d |\n", getArmor());
+        System.out.println("+-------+---+");
+        for (Money money:currencies)
+        {
+            System.out.println("+-------------+-----+");
+            System.out.printf("| MONEY (%s) | %d |\n", money.getCurrency(), money.getValue());
+            System.out.println("+-------------+-----+");
+        }
     }
 
-    public void increaseMoneyCheck(Item item)
+    public void increaseMoneyCheck(Bill bill)
     {
-        if (item instanceof RUB)
+        for (Money money:getCurrencies())
         {
-            moneyRUB += ((Money) item).getCost();
+            if (money.getCurrency() == bill.getCost().getCurrency())
+            {
+                money.setValue(money.getValue() + bill.getCost().getValue());
+                return;
+            }
         }
-        else if (item instanceof USD)
+        if (bill.getCost().getCurrency() == Currency.RUB)
         {
-            moneyUSD += ((Money) item).getCost();
+            getCurrencies().add(new MoneyRUB(bill.getCost().getValue()));
         }
-        else if (item instanceof EUR)
+        else if (bill.getCost().getCurrency() == Currency.USD)
         {
-            moneyEUR += ((Money) item).getCost();
+            getCurrencies().add(new MoneyUSD(bill.getCost().getValue()));
+        }
+        else if (bill.getCost().getCurrency() == Currency.EUR)
+        {
+            getCurrencies().add(new MoneyEUR(bill.getCost().getValue()));
         }
     }
-    public void decreaseMoneyCheck(Item item)
+    public void increaseMoneyCheck(BillsPack billsPack)
     {
-        if (item instanceof RUB)
+        for (Money money:getCurrencies())
         {
-            moneyRUB -= ((Money) item).getCost();
+            if (money.getCurrency() == billsPack.getCurrency())
+            {
+                money.setValue(money.getValue() + billsPack.getCost().getValue());
+                return;
+            }
         }
-        else if (item instanceof USD)
+        if (billsPack.getCost().getCurrency() == Currency.RUB)
         {
-            moneyUSD -= ((Money) item).getCost();
+            getCurrencies().add(new MoneyRUB(billsPack.getCost().getValue()));
         }
-        else if (item instanceof EUR)
+        else if (billsPack.getCost().getCurrency() == Currency.USD)
         {
-            moneyEUR -= ((Money) item).getCost();
+            getCurrencies().add(new MoneyUSD(billsPack.getCost().getValue()));
+        }
+        else if (billsPack.getCost().getCurrency() == Currency.EUR)
+        {
+            getCurrencies().add(new MoneyEUR(billsPack.getCost().getValue()));
+        }
+    }
+    public void decreaseMoneyCheck(Bill bill)
+    {
+        for (Money money:getCurrencies())
+        {
+            if (bill.getCost().getCurrency() == money.getCurrency())
+            {
+                money.setValue(money.getValue() - bill.getCost().getValue());
+                if (money.getValue() == 0)
+                {
+                    getCurrencies().remove(money);
+                }
+                return;
+            }
+        }
+    }
+    public void decreaseMoneyCheck(BillsPack billsPack)
+    {
+        for (Money money:getCurrencies())
+        {
+            if (billsPack.getCost().getCurrency() == money.getCurrency())
+            {
+                money.setValue(money.getValue() - billsPack.getCost().getValue());
+                if (money.getValue() == 0)
+                {
+                    getCurrencies().remove(money);
+                }
+                return;
+            }
         }
     }
 
     public void insertIntoInventory(Item item)
     {
-        increaseMoneyCheck(item);
-        inventory.add(item);
+        item.setOwner(this);
+        if (item.getType() == ItemType.BILL)
+        {
+            Bill bill = (Bill) item;
+            increaseMoneyCheck(bill);
+        }
+        else if (item.getType() == ItemType.BILLS_PACK)
+        {
+            BillsPack billsPack = (BillsPack) item;
+            increaseMoneyCheck(billsPack);
+        }
+        getInventory().add(item);
     }
     public int getAmount(Item item)
     {
         int qty = 0;
-        for (Item tempItem:inventory)
+        for (Item tempItem:getInventory())
         {
             if (item.getDescription().equals(tempItem.getDescription()))
             {
@@ -89,39 +157,37 @@ public class Player
         }
         return qty;
     }
-    public ArrayList<Money> getPackOfMoney(String currency, int amount)
+    /*public BillsPack getBillsPack(String currency, int cost)
     {
-        ArrayList<Money> moneyPack = new ArrayList<>();
-        int money = 0;
-        if (currency.equalsIgnoreCase("RUB"))
+        int money = 0, costTemp = cost;
+        for (Money currency1:getCurrencies())
         {
-            money = getMoneyRUB();
+            if (currency1.getCurrency().equalsIgnoreCase(currency))
+            {
+                money = currency1.getValue();
+            }
         }
-        else if (currency.equalsIgnoreCase("USD"))
+        if (money >= costTemp)
         {
-            money = getMoneyUSD();
-        }
-        else if (currency.equalsIgnoreCase("EUR"))
-        {
-            money = getMoneyEUR();
-        }
-        if (money >= amount)
-        {
+            BillsPack billsPack = new BillsPack();
             for (Item item:getInventory())
             {
                 if (item instanceof Money)
                 {
-                    if (item.getCurrency().equalsIgnoreCase(currency) && item.getCost() <= amount)
+                    if (item.getCurrency().equalsIgnoreCase(currency) && item.getValue() <= costTemp)
                     {
-                        moneyPack.add((Money) item);
-                        amount -= item.getCost();
-                        if (amount == 0)
+                        billsPack.getBillsPack().add((Money) item);
+                        costTemp -= item.getValue();
+                        if (costTemp == 0)
                         {
-                            for (Item item1:moneyPack)
+                            for (Item item1:billsPack.getBillsPack())
                             {
-                                deleteFromInventory(item1);
+                                getFromInventory(item1);
                             }
-                            return moneyPack;
+                            billsPack.setValue(cost);
+                            billsPack.setOwner(this);
+                            billsPack.setDescription(cost+" "+currency+" Bills Pack");
+                            return billsPack;
                         }
                     }
                 }
@@ -133,24 +199,12 @@ public class Player
             return null;
         }
         return null;
-    }
-    public int getPackOfMoneyCost(ArrayList<Money> pack)
+    }*/
+    /*public void makeBillsPack(String currency, int cost)
     {
-        int cost = 0;
-        for (Money money:pack)
-        {
-            cost += money.getCost();
-        }
-        return cost;
-    }
-    public void givePackOfMoney(ArrayList<Money> pack, Player player)
-    {
-        for (Money money:pack)
-        {
-            player.insertIntoInventory(money);
-        }
-    }
-    public Item buy(String itemName, ArrayList<Money> money, Player player)
+        insertIntoInventory(getBillsPack(currency, cost));
+    }*/
+    public Item buy(String itemName, BillsPack billsPack, Player player)
     {
         Item item = player.getFromInventory(itemName);
         if (item == null)
@@ -158,9 +212,9 @@ public class Player
             System.out.println("Selected player doesnt have that item");
             return null;
         }
-        if (getPackOfMoneyCost(money) >= item.getCost())
+        if (billsPack.getCost().getValue() >= item.getCost().getValue())
         {
-            givePackOfMoney(money, player);
+            give(billsPack, player);
             return item;
         }
         System.out.println("You gave not enough money for that item");
@@ -171,18 +225,38 @@ public class Player
         Item item = getFromInventory(itemName);
         player.insertIntoInventory(item);
     }
-    public ArrayList<Money> sell(String itemName, int cost, String currency, Player player)
+    public void give(Item item, Player player)
     {
-        ArrayList<Money> pack = player.getPackOfMoney(currency, cost);
-        Item item = getFromInventory(itemName);
-        if (getPackOfMoneyCost(pack) >= cost && item != null)
+        player.insertIntoInventory(item);
+    }
+    public BillsPack sell(String itemName, int cost, Currency currency, Player player) //TODO
+    {
+        BillsPack billsPack = new BillsPack(currency);
+        if (billsPack != null)
         {
-            player.insertIntoInventory(item);
-            return pack;
+            if (billsPack.getCost().getValue() >= cost)
+            {
+                Item item = getFromInventory(itemName);
+                if (item != null)
+                {
+                    player.insertIntoInventory(item);
+                    return billsPack;
+                }
+                else
+                {
+                    System.out.println("Another player doesnt have required item");
+                    return null;
+                }
+            }
+            else
+            {
+                System.out.println("Another player doesnt have such amount of money");
+                return null;
+            }
         }
         else
         {
-            System.out.println("You dont have this item or another player dont have such amount of money");
+            System.out.println("Another player doesnt have such amount of money");
             return null;
         }
     }
@@ -195,24 +269,44 @@ public class Player
         }
         else
         {
-            System.out.println("Another player dont have this item");
+            System.out.println("Another player doesnt have this item");
             return null;
         }
     }
-    public void deleteFromInventory(Item item)
+    public Item getFromInventory(Item item)
     {
-        if (!inventory.isEmpty())
+        if (!getInventory().isEmpty() && getInventory().contains(item))
         {
-            inventory.remove(item);
-            decreaseMoneyCheck(item);
+            getInventory().remove(item);
+            if (item.getType() == ItemType.BILL)
+            {
+                Bill bill = (Bill) item;
+                decreaseMoneyCheck(bill);
+            }
+            else if (item.getType() == ItemType.BILLS_PACK)
+            {
+                BillsPack billsPack = (BillsPack) item;
+                decreaseMoneyCheck(billsPack);
+            }
+            return item;
         }
+        return null;
     }
     public Item getFromInventory(int index)
     {
-        if (!inventory.isEmpty())
+        if (!getInventory().isEmpty())
         {
-            Item item = inventory.remove(index);
-            decreaseMoneyCheck(item);
+            Item item = getInventory().remove(index);
+            if (item.getType() == ItemType.BILL)
+            {
+                Bill bill = (Bill) item;
+                decreaseMoneyCheck(bill);
+            }
+            else if (item.getType() == ItemType.BILLS_PACK)
+            {
+                BillsPack billsPack = (BillsPack) item;
+                decreaseMoneyCheck(billsPack);
+            }
             return item;
         }
         else
@@ -222,14 +316,23 @@ public class Player
     }
     public Item getFromInventory(String name)
     {
-        if (!inventory.isEmpty())
+        if (!getInventory().isEmpty())
         {
-            for (Item item:inventory)
+            for (Item item:getInventory())
             {
                 if (item.getDescription().equalsIgnoreCase(name))
                 {
-                    inventory.remove(item);
-                    decreaseMoneyCheck(item);
+                    getInventory().remove(item);
+                    if (item.getType() == ItemType.BILL)
+                    {
+                        Bill bill = (Bill) item;
+                        decreaseMoneyCheck(bill);
+                    }
+                    else if (item.getType() == ItemType.BILLS_PACK)
+                    {
+                        BillsPack billsPack = (BillsPack) item;
+                        decreaseMoneyCheck(billsPack);
+                    }
                     return item;
                 }
             }
@@ -286,9 +389,19 @@ public class Player
             return null;
         }
     }
-    public ArrayList<Item> getInventory()
+    public List<Item> getInventory()
     {
         return inventory;
+    }
+
+    public List<Money> getCurrencies()
+    {
+        return currencies;
+    }
+
+    public List<Cloth> getClothes()
+    {
+        return clothes;
     }
 
     public int getArmor() {
@@ -325,29 +438,5 @@ public class Player
     public void decreaseHealth(int health)
     {
         this.health -= health;
-    }
-
-    public int getMoneyRUB() {
-        return moneyRUB;
-    }
-
-    public void setMoneyRUB(int moneyRUB) {
-        this.moneyRUB = moneyRUB;
-    }
-
-    public int getMoneyUSD() {
-        return moneyUSD;
-    }
-
-    public void setMoneyUSD(int moneyUSD) {
-        this.moneyUSD = moneyUSD;
-    }
-
-    public int getMoneyEUR() {
-        return moneyEUR;
-    }
-
-    public void setMoneyEUR(int moneyEUR) {
-        this.moneyEUR = moneyEUR;
     }
 }

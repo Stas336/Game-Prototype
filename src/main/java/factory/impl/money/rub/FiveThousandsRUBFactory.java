@@ -1,12 +1,13 @@
 package factory.impl.money.rub;
 
 import factory.Factory;
-import item.money.RUB;
+import item.money.MoneyRUB;
+import item.types.impl.Bill;
 
-public class FiveThousandsRUBFactory implements Factory<RUB>
+public class FiveThousandsRUBFactory implements Factory<Bill>
 {
-    public RUB newItem()
+    public Bill newItem()
     {
-        return new RUB(5000);
+        return new Bill(new MoneyRUB(5000));
     }
 }

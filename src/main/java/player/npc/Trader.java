@@ -2,7 +2,8 @@ package player.npc;
 
 import item.map.ItemsMap;
 import item.types.Item;
-import item.types.impl.Money;
+import item.money.Money;
+import item.types.ItemType;
 import player.Player;
 import random.Generator;
 
@@ -11,9 +12,14 @@ import java.util.Map;
 
 public class Trader extends Player
 {
-    public void updateMarketplace(ItemsMap map)
+    public void updateMarketplace(ItemsMap map, int minRequiredItems, int maxRequiredItems)
     {
-        int amount = Generator.nextInt(1, 100);
+        if (minRequiredItems <= 0 || minRequiredItems > maxRequiredItems)
+        {
+            System.out.println("Enter right parameters");
+            return;
+        }
+        int amount = Generator.nextInt(minRequiredItems, maxRequiredItems);
         for (int i = 0;i < amount;i++)
         {
             insertIntoInventory(map.getItem(Generator.nextInt(0, map.getAllItemTypesAmount())));
@@ -25,7 +31,7 @@ public class Trader extends Player
         HashMap<Item, Integer> map = getAllItemTypes();
         for (Map.Entry<Item, Integer> cursor:map.entrySet())
         {
-            if (!(cursor.getKey() instanceof Money))
+            if (!(cursor.getKey().getType() == ItemType.BILL))
             {
                 itemsCheck = true;
                 break;
@@ -40,16 +46,26 @@ public class Trader extends Player
             System.out.println("I have this items for trade:");
             for (Map.Entry<Item, Integer> cursor:map.entrySet())
             {
-                if (!(cursor.getKey() instanceof Money))
+                if (!(cursor.getKey().getType() == ItemType.BILL))
                 {
                     System.out.print(cursor.getKey().getDescription()+" X"+cursor.getValue()+" ");
-                    System.out.println(cursor.getKey().getCost()+" "+cursor.getKey().getCurrency());
+                    System.out.println(cursor.getKey().getCost()+" "+cursor.getKey().getCost().getCurrency());
                 }
             }
         }
     }
     public void showAvailableMoney()
     {
-        System.out.printf("I have %d RUB, %d USD and %d EUR right now\n", getMoneyRUB(), getMoneyUSD(), getMoneyEUR());
+        if (!getCurrencies().isEmpty())
+        {
+            for (Money money:getCurrencies())
+            {
+                System.out.printf("I have %d %s right now\n", money.getValue(), money.getCurrency());
+            }
+        }
+        else
+        {
+            System.out.println("I dont have money at all right now");
+        }
     }
 }

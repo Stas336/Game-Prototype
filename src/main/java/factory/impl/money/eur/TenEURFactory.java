@@ -1,12 +1,13 @@
 package factory.impl.money.eur;
 
 import factory.Factory;
-import item.money.EUR;
+import item.money.MoneyEUR;
+import item.types.impl.Bill;
 
-public class TenEURFactory implements Factory<EUR>
+public class TenEURFactory implements Factory<Bill>
 {
-    public EUR newItem()
+    public Bill newItem()
     {
-        return new EUR(10);
+        return new Bill(new MoneyEUR(10));
     }
 }

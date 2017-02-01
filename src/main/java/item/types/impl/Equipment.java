@@ -1,43 +1,20 @@
 package item.types.impl;
 
+import item.money.Currency;
+import item.money.Money;
 import item.types.Item;
+import item.types.ItemType;
 import player.Player;
 
-import java.util.ArrayList;
-
-public class Equipment implements Item
+public class Equipment extends Item
 {
-    private String description;
-    private Money cost;
-    private Player owner;
-
-    public String getDescription()
+    public Equipment(Money cost, String description)
     {
-        return this.description;
+        super(cost, description);
     }
 
-    public void setDescription(String newDescription) {
-        this.description = newDescription;
-    }
-
-    public int getCost() {
-        return this.cost.getCost();
-    }
-
-    public void setCost(Money newCost) {
-        this.cost = newCost;
-    }
-
-    public String getCurrency()
-    {
-        return cost.getCurrency();
-    }
-
-    public Player getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(Player player) {
-        this.owner = player;
+    @Override
+    public ItemType getType() {
+        return ItemType.EQUIPMENT;
     }
 }

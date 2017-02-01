@@ -2,11 +2,14 @@ package game;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
-import com.sun.org.apache.bcel.internal.generic.MONITORENTER;
 import game.input.ValueReader;
+import game.output.ConsoleCleaner;
+import item.money.Currency;
 import item.types.Item;
 import item.map.ItemsMap;
-import item.types.impl.Money;
+import item.types.impl.Bill;
+import item.types.impl.BillsPack;
+import item.money.Money;
 import player.Player;
 import player.npc.Trader;
 
@@ -46,6 +49,7 @@ public class Game
             switch (userInputInt)
             {
                 case 1:
+                    ConsoleCleaner.clear();
                     int i = 0;
                     String leftAlignFormat = "| %-15s | %-4d |%n";
                     System.out.format("+-----------------+------+%n");
@@ -59,6 +63,7 @@ public class Game
                     //System.out.println(itemsMap.getAllItemTypes().toArray());
                     break;
                 case 2:
+                    ConsoleCleaner.clear();
                     System.out.println("Enter item id");
                     userInputStr = ValueReader.readValue();
                     userInputInt = Integer.parseInt(userInputStr);
@@ -68,6 +73,7 @@ public class Game
                     System.out.println("Item description is " + item.getDescription());
                     break;
                 case 3:
+                    ConsoleCleaner.clear();
                     System.out.println("Enter item id");
                     userInputStr = ValueReader.readValue();
                     userInputInt = Integer.parseInt(userInputStr);
@@ -85,6 +91,7 @@ public class Game
                     }
                     break;
                 case 4:
+                    ConsoleCleaner.clear();
                     System.out.println("Enter item id");
                     userInputStr = ValueReader.readValue();
                     userInputInt = Integer.parseInt(userInputStr);
@@ -94,39 +101,45 @@ public class Game
                     System.out.println(tempItem.getCost());
                     break;
                 case 5:
+                    ConsoleCleaner.clear();
                     players.get(MAIN_PLAYER).showPlayerInfo();
                     break;
                 case 6:
+                    ConsoleCleaner.clear();
                     addTrader();
                     System.out.println("Trader");
                     if (players.get(1) instanceof Trader)
                     {
-                        ((Trader) players.get(1)).updateMarketplace(itemsMap);
+                        ((Trader) players.get(1)).updateMarketplace(itemsMap, 1, 100);
                         ((Trader) players.get(1)).showItems();
                         ((Trader) players.get(1)).showAvailableMoney();
                     }
                     break;
-                case 7:
+                case 7: //TODO
+                    ConsoleCleaner.clear();
                     System.out.println("Enter amount of money for your pack");
                     userInputStr = ValueReader.readValue();
                     int amount = Integer.parseInt(userInputStr);
                     System.out.println("Enter currency for your pack");
                     userInputStr = ValueReader.readValue();
-                    ArrayList<Money> pack = players.get(MAIN_PLAYER).getPackOfMoney(userInputStr, amount);
-                    if (pack != null)
+                    BillsPack billsPack = new BillsPack(Currency.valueOf(userInputStr));
+                    if (billsPack != null)
                     {
                         System.out.println("Pack of money contains:");
-                        for (Money money:pack)
+                        for (Bill bill:billsPack.getBillsUnmodifiable())
                         {
-                            System.out.println(money.getDescription());
+                            System.out.println(bill.getDescription());
                         }
                     }
                     break;
                 case 8:
+                    ConsoleCleaner.clear();
                     System.out.println("Exiting...");
                     System.exit(0);
                     break;
                 default:
+                    ConsoleCleaner.clear();
+                    System.out.println("Enter right variant");
                     break;
             }
         }

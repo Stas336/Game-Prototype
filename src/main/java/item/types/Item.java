@@ -1,15 +1,52 @@
 package item.types;
 
-import item.types.impl.Money;
+import item.money.Money;
 import player.Player;
 
-public interface Item
+public abstract class Item
 {
-    String getDescription();
-    void setDescription(String newDescription);
-    int getCost();
-    void setCost(Money newCost);
-    String getCurrency();
-    Player getOwner();
-    void setOwner(Player player);
+    private Money cost;
+    private String description;
+    private Player owner;
+
+    public Item(Money cost)
+    {
+        this(cost, "");
+    }
+
+    public Item(Money cost, String description)
+    {
+        setCost(cost);
+        setDescription(description);
+    }
+
+    public Player getOwner()
+    {
+        return owner;
+    }
+
+    public void setOwner(Player player)
+    {
+        owner = player;
+    }
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String newDescription)
+    {
+        description = newDescription;
+    }
+
+    public Money getCost()
+    {
+        return cost;
+    }
+
+    public void setCost(Money newMoney)
+    {
+        cost = newMoney;
+    }
+    public abstract ItemType getType();
 }
